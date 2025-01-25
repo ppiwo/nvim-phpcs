@@ -88,7 +88,7 @@ end
 
 M.detect_local_paths()
 
---- Setup and configure nvim-phpcsf
+--- Setup and configure nvim-phpcs
 ---
 --- @param opts table|nil
 ---     - phpcs (string|nil):

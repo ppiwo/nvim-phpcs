@@ -1,59 +1,43 @@
-# nvim-phpcsf
+# nvim-phpcs
 
 ## What is nvim-phpcsf?
-`nvim-phpcsf` is a simple nvim plugin wrapper for both phpcs and phpcbf.
-The PHP_CodeSniffer's output is populated using the telescope picker. Telescope helps to navigate through phpcs errors and warnings and preview.
+nvim-phpcs is a fork of [nvim-phpcsf](https://github.com/praem90/nvim-phpcsf) - A Neovim plugin for PHP_CodeSniffer that provides seamless integration with Telescope for navigating and previewing PHP code sniffer errors and warnings.
 
+---
 
-## Instalation
-Install [telescope](https://github.com/nvim-telescope/telescope.nvim) and [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer).
-Using the [vim-plug](https://github.com/junegunn/vim-plug) plugin manager add the following in your VIM configuration (e.g. ~/.vimrc or ~/.config/nvim/init.vim when using Neovim):
+## How does it differ from nvim-phpcsf?
+- *Automatic Ruleset Detection*: Automatically detects local ruleset filenames in the following order:
+  1. `phpcs.xml` (highest precedence)
+  2. `ruleset.xml`
+  3. `.phpcs.xml.dist`
+- *Improved Diagnostics Mapping*: Fixes path normalization issues from the original repository that prevented diagnostics from appearing in the editor.
+- *Excludes formatting*: The formatting functionality (phpcbf) has been removed. You can configure a formatter like [conform.nvim](https://github.com/stevearc/conform.nvim) for this purpose.
 
-```
-Plug 'praem90/nvim-phpcsf'
-```
+---
 
-To run sniffer
-```
-:lua require'phpcs'.cs()
-```
+## Dependencies
+- [Telescope](https://github.com/nvim-telescope/telescope.nvim)
+- [PHP_CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer).
 
-To run beautifier
-```
-:lua require'phpcs'.cbf()
-```
+---
 
-To run PHP_CodeBeautifier after save (It is recommended to run this after the buffer has been written BufWritePost)
-```
-augroup PHBSCF
-    autocmd!
-    autocmd BufWritePost,BufReadPost,InsertLeave *.php :lua require'phpcs'.cs()
-    autocmd BufWritePost *.php :lua require'phpcs'.cbf()
-augroup END
-```
+## Install & Config
+Using lazy
+'''
+return {
+	"ppiwo/nvim-phpcs",
+	event = { "BufReadPost" },
+	ft = { "php" },
+	config = function()
+		vim.g.nvim_phpcs_config_phpcs_path = "phpcs"
+		vim.g.nvim_phpcs_config_phpcs_standard = ""
 
-## Configurations
-```vim
-let g:nvim_phpcs_config_phpcs_path = 'phpcs'
-let g:nvim_phpcs_config_phpcbf_path = 'phpcbf'
-let g:nvim_phpcs_config_phpcs_standard = 'PSR12' " or path to your ruleset phpcs.xml
-```
-
-Using lua
-
-```lua
-require("phpcs").setup({
-  phpcs = "phpcs",
-  phpcbf = "phpcbf",
-  standard = "PSR12"
-})
-```
-
-## Thanks
-[@thePrimeagen](https://github.com/theprimeagen)
-[@tjDevries](https://github.com/tjDevries)
-
-## TODO:
- - [x] Detect phpcs.xml automatically on the project root
- - [x] Add sign to current buffer
-
+		vim.api.nvim_create_augroup("PHPCSGroup", { clear = true })
+		vim.api.nvim_create_autocmd({ "BufWritePost", "BufReadPost" }, {
+			group = "PHPCSGroup",
+			pattern = "*.php",
+			command = "lua require'phpcs'.cs()",
+		})
+	end,
+}
+'''
