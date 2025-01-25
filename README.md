@@ -21,6 +21,9 @@ Using [lazy.nvim](https://github.com/folke/lazy.nvim)
 {
     "ppiwo/nvim-phpcs",
     event = { "BufReadPost" },
+    dependencies = {
+        "nvim-telescope/telescope.nvim",
+    },
     ft = { "php" },
     config = function()
     	vim.g.nvim_phpcs_config_phpcs_path = "phpcs"
